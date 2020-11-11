@@ -57,6 +57,8 @@ int main() {
                                            B = {{1, 2, 3, 4}}, C;
   std::array<cl::sycl::cl_float, array_size> D = {{1.f, 2.f, 3.f, 4.f}},
                                              E = {{1.f, 2.f, 3.f, 4.f}}, F;
+  std::array<cl::sycl::cl_float, array_size> G = {{1.f, 2.f, 3.f, 4.f}},
+                                             K = {{1.f, 2.f, 3.f, 4.f}}, K;
   simple_vadd(A, B, C);
   simple_vadd(D, E, F);
   for (unsigned int i = 0; i < array_size; i++) {
