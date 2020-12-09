@@ -2,7 +2,7 @@ name: auto sync main branch from llvm-project to llvm
 
 on:
   schedule:
-  - cron: 45, 50, 51, 52, 53 * * * *
+  - cron: 45,50,51,52,53 * * * *
 jobs:
    check:
      runs-on: ubuntu-latest
