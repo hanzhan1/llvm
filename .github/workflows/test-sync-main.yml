@@ -32,6 +32,9 @@ jobs:
             return 1
           fi
           echo "ready to checkout main branch"
+          pwd
+          ls
+          git branch -a
           git checkout $BRANCH
           git remote prune origin
           git pull --ff --ff-only origin
