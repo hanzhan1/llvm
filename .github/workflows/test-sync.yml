@@ -1,0 +1,53 @@
+name: auto sync main branch from llvm-project to llvm
+
+on:
+  schedule:
+  - cron: 0 * * * *
+jobs:
+   check:
+     runs-on: ubuntu-latest
+     strategy:
+       fail-fast: false
+
+     steps:
+     - uses: actions/checkout@v2
+       with:
+         path: src
+     - name: Sync
+       run: |
+         cd $GITHUB_WORKSPACE/src
+         branch=(main)
+         base_repo="git@github.com:hanzhan1/llvm.git"
+         sync_repo="https://github.com/llvm/llvm-project"
+         if [ ! -d ".git" ]; then
+            rm -rf ./*
+            rm -rf ./.*
+            git clone --progress $base_repo
+         fi
+         for b in ${branch[*]};do
+            if [ ! -z "$(git status --porcelain)" ]; then
+                git status
+                echo "$b workspace dirty, abort"
+                return 1
+            fi
+            git checkout $b
+            git remote prune origin
+            git pull --ff --ff-only origin
+            if [ $? -ne 0 ]; then
+                echo "failed to pull from origin, abort"
+                return 1
+            fi
+            git pull --ff --ff-only $sync_repo $b
+            if [ $? -ne 0 ]; then
+                echo "failed to pull from $sync_repo $b, abort"
+                return 1
+            fi
+            if [ "equal" == "$(get_state origin/$b $b)" ] ; then
+                echo "no change, skip"
+            elif [ "ahead" == "$(get_state origin/$b $b)" ] ; then
+                git push origin
+            else
+                echo "$b branch invalid state"
+                return 1
+            fi
+         done
