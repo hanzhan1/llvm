@@ -14,38 +14,39 @@ jobs:
        with:
          path: src
      - name: Sync
+       env:
+        BRANCH: main
+        BASE_REPO: git@github.com:hanzhan1/llvm.git
+        SYNC_REPO: https://github.com/llvm/llvm-project
        run: |
          cd $GITHUB_WORKSPACE/src
-         export branch="main"
-         export base_repo="git@github.com:hanzhan1/llvm.git"
-         export sync_repo="https://github.com/llvm/llvm-project"
          if [ ! -d ".git" ]; then
             rm -rf ./*
             rm -rf ./.*
-            git clone --progress $base_repo
+            git clone --progress $BASE_REPO
          fi
          if [ ! -z "$(git status --porcelain)" ]; then
             git status
-            echo "$branch workspace dirty, abort"
+            echo "$BRANCH workspace dirty, abort"
             return 1
           fi
-          git checkout $branch
+          git checkout $BRANCH
           git remote prune origin
           git pull --ff --ff-only origin
           if [ $? -ne 0 ]; then
               echo "failed to pull from origin, abort"
               return 1
           fi
-          git pull --ff --ff-only $sync_repo $branch
+          git pull --ff --ff-only $SYNC_REPO $BRANCH
           if [ $? -ne 0 ]; then
-              echo "failed to pull from $sync_repo $branch, abort"
+              echo "failed to pull from $SYNC_REPO $BRANCH, abort"
               return 1
           fi
-          if [ "equal" == "$(get_state origin/$branch $branch)" ] ; then
+          if [ "equal" == "$(get_state origin/$BRANCH $BRANCH)" ] ; then
               echo "no change, skip"
-          elif [ "ahead" == "$(get_state origin/$branch $branch)" ] ; then
+          elif [ "ahead" == "$(get_state origin/$BRANCH $BRANCH)" ] ; then
               git push origin
           else
-              echo "$branch branch invalid state"
+              echo "$BRANCH branch invalid state"
               return 1
           fi
