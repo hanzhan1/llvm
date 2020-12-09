@@ -2,7 +2,7 @@ name: auto sync main branch from llvm-project to llvm
 
 on:
   schedule:
-  - cron: 0,10,20,30,40,50 * * * *
+  - cron: '*/10 * * * *'
 jobs:
    check:
      runs-on: ubuntu-latest
@@ -16,9 +16,9 @@ jobs:
      - name: Sync
        run: |
          cd $GITHUB_WORKSPACE/src
-         branch="main"
-         base_repo="git@github.com:hanzhan1/llvm.git"
-         sync_repo="https://github.com/llvm/llvm-project"
+         export branch="main"
+         export base_repo="git@github.com:hanzhan1/llvm.git"
+         export sync_repo="https://github.com/llvm/llvm-project"
          if [ ! -d ".git" ]; then
             rm -rf ./*
             rm -rf ./.*
