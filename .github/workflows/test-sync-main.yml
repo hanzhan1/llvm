@@ -12,11 +12,11 @@ jobs:
      steps:
      - uses: actions/checkout@v2
        with:
-         ref: 'master'
+         ref: 'main'
          path: src
      - name: Sync
        env:
-        BRANCH: "master"
+        BRANCH: "main"
         BASE_REPO: git@github.com:hanzhan1/llvm.git
         SYNC_REPO: https://github.com/llvm/llvm-project
        run: |
