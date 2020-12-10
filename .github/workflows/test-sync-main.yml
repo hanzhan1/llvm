@@ -44,7 +44,7 @@ jobs:
               return 1
           fi
           echo "ready to pull SYNC REPO BRANCH"
-          git pull --ff --ff-only $SYNC_REPO $BRANCH --allow-unrelated-histories
+          git pull --ff --ff-only $SYNC_REPO $BRANCH
           if [ $? -ne 0 ]; then
               echo "failed to pull from $SYNC_REPO $BRANCH, abort"
               return 1
