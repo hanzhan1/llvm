@@ -38,7 +38,7 @@ jobs:
               #git_status=`git rev-list --count --left-right origin/$BRANCH...$BRANCH`
               if [ "0	0" == "$(git rev-list --count --left-right origin/$BRANCH...$BRANCH)" ] ; then
                   echo "no change, skip"
-              elif [ "0	"* == "$git rev-list --count --left-right origin/$BRANCH...$BRANCH" ] ; then
+              elif [ "0	"* == "$(git rev-list --count --left-right origin/$BRANCH...$BRANCH)" ] ; then
                   git push origin
               else
                   echo "$BRANCH branch invalid state"
