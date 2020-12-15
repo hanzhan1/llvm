@@ -1,31 +1,29 @@
-name: auto sync main branch from llvm-project to llvm test1
+name: automatic sync main branch from llvm-project to llvm
 
 on:
-  workflow_dispatch:
   schedule:
-  - cron: '0 * * * *'
+  - cron: '*/10 * * * *'
 jobs:
-   check:
-     runs-on: ubuntu-latest
-     strategy:
-       fail-fast: false
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
 
-     steps:
-     - uses: actions/checkout@v2
-       with:
-         fetch-depth: 0
-         path: src
-     - name: Sync
-       env:
-        BRANCH: "main"
-        BASE_REPO: git@github.com:hanzhan1/llvm.git
-        SYNC_REPO: https://github.com/llvm/llvm-project
-       run: |
-         cd $GITHUB_WORKSPACE/src
-         if [ ! -z "$(git status --porcelain)" ]; then
-            git status
-            echo "$BRANCH workspace dirty, abort"
-            return 1
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          path: src
+      - name: Sync
+        env:
+          BRANCH: "main"
+          SYNC_REPO: https://github.com/llvm/llvm-project
+        run: |
+          cd $GITHUB_WORKSPACE/src
+          if [ ! -z "$(git status --porcelain)" ]; then
+              git status
+              echo "$BRANCH workspace dirty, abort"
+              return 1
           fi
           echo "check whether main branch exists"
           branch_exist=`git ls-remote --heads origin main | wc -l`
@@ -53,6 +51,4 @@ jobs:
               git checkout -B $BRANCH upstream/$BRANCH
               git push origin
           fi
-          
           echo "sync finished"
-          
