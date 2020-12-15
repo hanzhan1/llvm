@@ -40,7 +40,7 @@ jobs:
               echo "git status after pull is $git_status"
               if [ "0	0" == "$git_status" ] ; then
                   echo "no change, skip"
-              elif [ "0	"* == "$git_status" ] ; then
+              elif [ "$git_status" =~  "0	" ] ; then
                   git push origin
               else
                   echo "$BRANCH branch invalid state"
