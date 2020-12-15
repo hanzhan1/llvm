@@ -1,6 +1,7 @@
 name: automatic sync main branch from llvm-project to llvm
 
 on:
+  workflow_dispatch:
   schedule:
   - cron: '*/10 * * * *'
 jobs:
