@@ -62,7 +62,7 @@ jobs:
           ls
           echo "ready to pull SYNC REPO BRANCH"
           branch_exist=`git ls-remote --heads origin main | wc -l`
-          if [ $? -ne 0 ]; then
+          if [ $branch_exist -ne 0 ]; then
               echo "ready to git pull"
               git pull --ff --ff-only $SYNC_REPO $BRANCH
           else
