@@ -35,10 +35,10 @@ jobs:
                   echo "failed to pull from $SYNC_REPO $BRANCH, abort"
                   return 1
               fi
-              git_status=`git rev-list --count --left-right origin/$BRANCH...$BRANCH`
-              if [ "0	0" == "$git_status" ] ; then
+              #git_status=`git rev-list --count --left-right origin/$BRANCH...$BRANCH`
+              if [ "0	0" == "$(git rev-list --count --left-right origin/$BRANCH...$BRANCH)" ] ; then
                   echo "no change, skip"
-              elif [ "0	"* == "$git_status" ] ; then
+              elif [ "0	"* == "$git rev-list --count --left-right origin/$BRANCH...$BRANCH" ] ; then
                   git push origin
               else
                   echo "$BRANCH branch invalid state"
