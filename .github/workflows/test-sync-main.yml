@@ -63,8 +63,10 @@ jobs:
           echo "ready to pull SYNC REPO BRANCH"
           branch_exist=`git ls-remote --heads origin main | wc -l`
           if [ $? -ne 0 ]; then
+              echo "ready to git pull"
               git pull --ff --ff-only $SYNC_REPO $BRANCH
           else
+              echo "ready to checkout new branch $BRANCH"
               git remote add upstream $SYNC_REPO
               git fetch upstream
               git checkout -B $BRANCH upstream/$BRANCH
@@ -73,6 +75,7 @@ jobs:
               echo "failed to pull from $SYNC_REPO $BRANCH, abort"
               return 1
           fi
+          echo "pull finished"
           if [ "equal" == "$(get_state origin/$BRANCH $BRANCH)" ] ; then
               echo "no change, skip"
           elif [ "ahead" == "$(get_state origin/$BRANCH $BRANCH)" ] ; then
