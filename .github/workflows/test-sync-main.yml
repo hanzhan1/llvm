@@ -26,8 +26,8 @@ jobs:
               echo "$BRANCH workspace dirty, abort"
               exit 1
           fi
-          echo "check whether main branch exists"
-          branch_exist=`git ls-remote --heads origin main | wc -l`
+          echo "check whether $BRANCH branch exists"
+          branch_exist=`git ls-remote --heads origin $BRANCH | wc -l`
           if [ $branch_exist -ne 0 ]; then
               echo "$BRANCH branch exists, ready to update $BRANCH branch"
               git checkout $BRANCH
