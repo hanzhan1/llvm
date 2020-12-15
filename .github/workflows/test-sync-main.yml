@@ -65,22 +65,24 @@ jobs:
           if [ $branch_exist -ne 0 ]; then
               echo "ready to git pull"
               git pull --ff --ff-only $SYNC_REPO $BRANCH
+              if [ "equal" == "$(get_state origin/$BRANCH $BRANCH)" ] ; then
+                  echo "no change, skip"
+              elif [ "ahead" == "$(get_state origin/$BRANCH $BRANCH)" ] ; then
+                  git push origin
+              else
+                  echo "$BRANCH branch invalid state"
+                  return 1
+              fi
           else
               echo "ready to checkout new branch $BRANCH"
               git remote add upstream $SYNC_REPO
               git fetch upstream
               git checkout -B $BRANCH upstream/$BRANCH
+              git push origin
           fi
           if [ $? -ne 0 ]; then
               echo "failed to pull from $SYNC_REPO $BRANCH, abort"
               return 1
           fi
           echo "pull finished"
-          if [ "equal" == "$(get_state origin/$BRANCH $BRANCH)" ] ; then
-              echo "no change, skip"
-          elif [ "ahead" == "$(get_state origin/$BRANCH $BRANCH)" ] ; then
-              git push origin
-          else
-              echo "$BRANCH branch invalid state"
-              return 1
-          fi
+          
