@@ -61,7 +61,7 @@ jobs:
           pwd
           ls
           echo "ready to pull SYNC REPO BRANCH"
-          branch_exist=`git show-branch remotes/origin/$BRANCH`
+          branch_exist=`git ls-remote --heads origin main | wc -l`
           if [ $? -ne 0 ]; then
               git pull --ff --ff-only $SYNC_REPO $BRANCH
           else
