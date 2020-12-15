@@ -21,47 +21,13 @@ jobs:
         BASE_REPO: git@github.com:hanzhan1/llvm.git
         SYNC_REPO: https://github.com/llvm/llvm-project
        run: |
-         get_state() {
-              local count="$(git rev-list --count --left-right $1...$2)"
-              case "$count" in
-                  "") # no upstream
-                      echo "noUpstream"
-                      false
-                      ;;
-                  "0	0")
-                      echo "equal"
-                      true 
-                      ;;
-                  "0	"*)
-                      echo "ahead"
-                      true
-                      ;;
-                  *"	0")
-                      echo "behind"
-                      true
-                      ;;
-                  *)
-                      echo "diverged"
-                      true
-                      ;;
-              esac
-         }
          cd $GITHUB_WORKSPACE/src
-         echo "test"
-         if [ ! -d ".git" ]; then
-            rm -rf ./*
-            rm -rf ./.*
-            git clone --progress $BASE_REPO
-         fi
          if [ ! -z "$(git status --porcelain)" ]; then
             git status
             echo "$BRANCH workspace dirty, abort"
             return 1
           fi
-          echo "ready to checkout main branch"
-          pwd
-          ls
-          echo "ready to pull SYNC REPO BRANCH"
+          echo "check whether main branch exists"
           branch_exist=`git ls-remote --heads origin main | wc -l`
           if [ $branch_exist -ne 0 ]; then
               echo "ready to git pull"
@@ -71,9 +37,10 @@ jobs:
                   echo "failed to pull from $SYNC_REPO $BRANCH, abort"
                   return 1
               fi
-              if [ "0	0" == "$(git rev-list --count --left-right origin/$BRANCH...$BRANCH)" ] ; then
+              git_status=`git rev-list --count --left-right origin/$BRANCH...$BRANCH`
+              if [ "0	0" == "$git_status" ] ; then
                   echo "no change, skip"
-              elif [ "0	"* == "$(git rev-list --count --left-right origin/$BRANCH...$BRANCH)" ] ; then
+              elif [ "0	"* == "$git_status" ] ; then
                   git push origin
               else
                   echo "$BRANCH branch invalid state"
