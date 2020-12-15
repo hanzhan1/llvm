@@ -60,10 +60,15 @@ jobs:
           echo "ready to checkout main branch"
           pwd
           ls
-          git branch -a
-          git checkout -B $BRANCH
           echo "ready to pull SYNC REPO BRANCH"
-          git pull --ff --ff-only $SYNC_REPO $BRANCH
+          branch_exist=`git show-branch remotes/origin/$BRANCH`
+          if [ $? -ne 0 ]; then
+              git pull --ff --ff-only $SYNC_REPO $BRANCH
+          else
+              git remote add upstream $SYNC_REPO
+              git fetch upstream
+              git checkout -B $BRANCH upstream/$BRANCH
+          fi
           if [ $? -ne 0 ]; then
               echo "failed to pull from $SYNC_REPO $BRANCH, abort"
               return 1
