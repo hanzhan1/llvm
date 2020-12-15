@@ -16,7 +16,7 @@ jobs:
          path: src
      - name: Sync
        env:
-        BRANCH: "master"
+        BRANCH: "main"
         BASE_REPO: git@github.com:hanzhan1/llvm.git
         SYNC_REPO: https://github.com/llvm/llvm-project
        run: |
@@ -64,7 +64,7 @@ jobs:
           pwd
           ls
           git branch -a
-          git checkout $BRANCH
+          git checkout -B $BRANCH
           git remote prune origin
           git pull --ff --ff-only origin
           if [ $? -ne 0 ]; then
