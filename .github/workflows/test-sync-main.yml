@@ -19,11 +19,8 @@ jobs:
         BASE_REPO: git@github.com:hanzhan1/llvm.git
         SYNC_REPO: https://github.com/llvm/llvm-project
        run: |
-         get_state()
-          {
-              # $1 remote branch, $2 local branch
+         get_state() {
               local count="$(git rev-list --count --left-right $1...$2)"
-
               case "$count" in
                   "") # no upstream
                       echo "noUpstream"
@@ -46,7 +43,7 @@ jobs:
                       true
                       ;;
               esac
-          }
+         }
          cd $GITHUB_WORKSPACE/src
          echo "test"
          if [ ! -d ".git" ]; then
