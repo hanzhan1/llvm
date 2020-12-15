@@ -24,7 +24,7 @@ jobs:
           if [ ! -z "$(git status --porcelain)" ]; then
               git status
               echo "$BRANCH workspace dirty, abort"
-              return 1
+              exit 1
           fi
           echo "check whether main branch exists"
           branch_exist=`git ls-remote --heads origin main | wc -l`
@@ -34,16 +34,17 @@ jobs:
               git pull --ff --ff-only $SYNC_REPO $BRANCH
               if [ $? -ne 0 ]; then
                   echo "failed to pull from $SYNC_REPO $BRANCH, abort"
-                  return 1
+                  exit 1
               fi
-              #git_status=`git rev-list --count --left-right origin/$BRANCH...$BRANCH`
-              if [ "0	0" == "$(git rev-list --count --left-right origin/$BRANCH...$BRANCH)" ] ; then
+              git_status=`git rev-list --count --left-right origin/$BRANCH...$BRANCH`
+              echo "git status after pull is $git_status"
+              if [ "0	0" == "$git_status" ] ; then
                   echo "no change, skip"
-              elif [ "0	"* == "$(git rev-list --count --left-right origin/$BRANCH...$BRANCH)" ] ; then
+              elif [ "0	"* == "$git_status" ] ; then
                   git push origin
               else
                   echo "$BRANCH branch invalid state"
-                  return 1
+                  exit 1
               fi
           else
               echo "$BRANCH branch not exists, ready to checkout new branch $BRANCH"
