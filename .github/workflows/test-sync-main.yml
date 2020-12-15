@@ -61,12 +61,6 @@ jobs:
           ls
           git branch -a
           git checkout -B $BRANCH
-          git remote prune origin
-          git pull --ff --ff-only origin
-          if [ $? -ne 0 ]; then
-              echo "failed to pull from origin, abort"
-              return 1
-          fi
           echo "ready to pull SYNC REPO BRANCH"
           git pull --ff --ff-only $SYNC_REPO $BRANCH
           if [ $? -ne 0 ]; then
