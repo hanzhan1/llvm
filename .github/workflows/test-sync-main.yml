@@ -12,7 +12,6 @@ jobs:
      steps:
      - uses: actions/checkout@v2
        with:
-         ref: 'master'
          path: src
      - name: Sync
        env:
