@@ -30,7 +30,7 @@ jobs:
           echo "check whether main branch exists"
           branch_exist=`git ls-remote --heads origin main | wc -l`
           if [ $branch_exist -ne 0 ]; then
-              echo "ready to git pull"
+              echo "$BRANCH branch exists, ready to update $BRANCH branch"
               git checkout $BRANCH
               git pull --ff --ff-only $SYNC_REPO $BRANCH
               if [ $? -ne 0 ]; then
@@ -47,12 +47,12 @@ jobs:
                   return 1
               fi
           else
-              echo "ready to checkout new branch $BRANCH"
+              echo "$BRANCH branch not exists, ready to checkout new branch $BRANCH"
               git remote add upstream $SYNC_REPO
               git fetch upstream
               git checkout -B $BRANCH upstream/$BRANCH
               git push origin
           fi
           
-          echo "pull finished"
+          echo "sync finished"
           
