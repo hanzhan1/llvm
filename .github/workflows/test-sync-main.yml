@@ -2,7 +2,7 @@ name: auto sync main branch from llvm-project to llvm
 
 on:
   schedule:
-  - cron: '0 19 * * 4'
+  - cron: '0,30,35 * * * *'
 jobs:
    check:
      runs-on: ubuntu-latest
@@ -12,11 +12,11 @@ jobs:
      steps:
      - uses: actions/checkout@v2
        with:
-         ref: 'main'
+         ref: 'master'
          path: src
      - name: Sync
        env:
-        BRANCH: "main"
+        BRANCH: "master"
         BASE_REPO: git@github.com:hanzhan1/llvm.git
         SYNC_REPO: https://github.com/llvm/llvm-project
        run: |
