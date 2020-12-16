@@ -17,19 +17,12 @@ jobs:
           path: src
       - name: Sync
         env:
-          BRANCH: "main"
+          BRANCH: 'main'
           SYNC_REPO: https://github.com/llvm/llvm-project
         run: |
           cd $GITHUB_WORKSPACE/src
-          if [ ! -z "$(git status --porcelain)" ]; then
-              git status
-              echo "$BRANCH workspace dirty, abort"
-              exit 1
-          fi
-          echo "check whether $BRANCH branch exists"
           branch_exist=`git ls-remote --heads origin $BRANCH | wc -l`
           if [ $branch_exist -ne 0 ]; then
-              echo "$BRANCH branch exists, ready to update $BRANCH branch"
               git checkout $BRANCH
               git pull --ff --ff-only $SYNC_REPO $BRANCH
               if [ $? -ne 0 ]; then
@@ -37,7 +30,6 @@ jobs:
                   exit 1
               fi
               git_status=`git rev-list --count --left-right origin/$BRANCH...$BRANCH`
-              echo "git status after pull is $git_status"
               if [ "0	0" == "$git_status" ] ; then
                   echo "no change, skip"
               elif [[ "$git_status" =  0* ]] ; then
@@ -47,7 +39,6 @@ jobs:
                   exit 1
               fi
           else
-              echo "$BRANCH branch not exists, ready to checkout new branch $BRANCH"
               git remote add upstream $SYNC_REPO
               git fetch upstream
               git checkout -B $BRANCH upstream/$BRANCH
