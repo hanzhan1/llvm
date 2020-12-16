@@ -17,7 +17,7 @@ jobs:
           path: src
       - name: Sync
         env:
-          BRANCH: 'main'
+          BRANCH: main
           SYNC_REPO: https://github.com/llvm/llvm-project
         run: |
           cd $GITHUB_WORKSPACE/src
