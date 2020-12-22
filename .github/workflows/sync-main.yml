@@ -1,4 +1,4 @@
-name: automatic sync main branch from llvm-project to llvm
+name: automatic sync main branch from llvm-project to llvm test
 
 on:
   workflow_dispatch:
