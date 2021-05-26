@@ -532,6 +532,29 @@ void Value::replaceNonMetadataUsesWith(Value *New) {
   doRAUW(New, ReplaceMetadataUses::No);
 }
 
+void Value::replaceUsesWithIf(Value *New,
+                              llvm::function_ref<bool(Use &U)> ShouldReplace) {
+  assert(New && "Value::replaceUsesWithIf(<null>) is invalid!");
+  assert(New->getType() == getType() &&
+         "replaceUses of value with new value of different type!");
+
+  for (use_iterator UI = use_begin(), E = use_end(); UI != E;) {
+    Use &U = *UI;
+    ++UI;
+    if (!ShouldReplace(U))
+      continue;
+    // Must handle Constants specially, we cannot call replaceUsesOfWith on a
+    // constant because they are uniqued.
+    if (auto *C = dyn_cast<Constant>(U.getUser())) {
+      if (!isa<GlobalValue>(C)) {
+        C->handleOperandChange(this, New);
+        continue;
+      }
+    }
+    U.set(New);
+  }
+}
+
 /// Replace llvm.dbg.* uses of MetadataAsValue(ValueAsMetadata(V)) outside BB
 /// with New.
 static void replaceDbgUsesOutsideBlock(Value *V, Value *New, BasicBlock *BB) {
@@ -978,6 +1001,27 @@ bool Value::isSwiftError() const {
   if (!Alloca)
     return false;
   return Alloca->isSwiftError();
+}
+
+bool Value::isTransitiveUsedByMetadataOnly() const {
+  if (use_empty())
+    return false;
+  llvm::SmallVector<const User *, 32> WorkList;
+  llvm::SmallPtrSet<const User *, 32> Visited;
+  WorkList.insert(WorkList.begin(), user_begin(), user_end());
+  while (!WorkList.empty()) {
+    const User *U = WorkList.back();
+    WorkList.pop_back();
+    Visited.insert(U);
+    // If it is transitively used by a global value or a non-constant value,
+    // it's obviously not only used by metadata.
+    if (!isa<Constant>(U) || isa<GlobalValue>(U))
+      return false;
+    for (const User *UU : U->users())
+      if (!Visited.count(UU))
+        WorkList.push_back(UU);
+  }
+  return true;
 }
 
 //===----------------------------------------------------------------------===//

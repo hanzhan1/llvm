@@ -18,7 +18,6 @@
 #include "clang/Basic/TargetBuiltins.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/Frontend/OpenMP/OMPGridValues.h"
-#include "llvm/IR/DataLayout.h"
 
 using namespace clang;
 using namespace clang::targets;
@@ -185,6 +184,7 @@ bool AMDGPUTargetInfo::initFeatureMap(
   // XXX - What does the member GPU mean if device name string passed here?
   if (isAMDGCN(getTriple())) {
     switch (llvm::AMDGPU::parseArchAMDGCN(CPU)) {
+    case GK_GFX1034:
     case GK_GFX1033:
     case GK_GFX1032:
     case GK_GFX1031:
@@ -333,7 +333,6 @@ AMDGPUTargetInfo::AMDGPUTargetInfo(const llvm::Triple &Triple,
                   llvm::AMDGPU::getArchAttrR600(GPUKind)) {
   resetDataLayout(isAMDGCN(getTriple()) ? DataLayoutStringAMDGCN
                                         : DataLayoutStringR600);
-  assert(DataLayout->getAllocaAddrSpace() == Private);
   GridValues = llvm::omp::AMDGPUGpuGridValues;
 
   setAddressSpaceMap(Triple.getOS() == llvm::Triple::Mesa3D ||
@@ -346,7 +345,7 @@ AMDGPUTargetInfo::AMDGPUTargetInfo(const llvm::Triple &Triple,
   AllowAMDGPUUnsafeFPAtomics = Opts.AllowAMDGPUUnsafeFPAtomics;
 
   // Set pointer width and alignment for target address space 0.
-  PointerWidth = PointerAlign = DataLayout->getPointerSizeInBits();
+  PointerWidth = PointerAlign = getPointerWidthV(Generic);
   if (getMaxPointerWidth() == 64) {
     LongWidth = LongAlign = 64;
     SizeType = UnsignedLong;
